@@ -591,8 +591,8 @@ python2.7 split_fasta_by_group_size.py /mnt/DATA/belen/5_FGS/belen_MG_Megahit_ge
 cd ..
 mkdir 8_SPLIT 
 cd ./8_ANNOTATION
-mv *.fas ../9_SPLIT
-cd ../9_SPLIT/
+mv *.fas ../8_SPLIT
+cd ../8_SPLIT/
 
 ########
 ## 14 ## 
@@ -680,3 +680,94 @@ cat hmmsearch_kofam.sh | parallel -j 70 --tmpdir tmp
 cat ko_tbl/*.out.txt > KOFAM_all.out.txt
 
 python2.7 kegg_multi_from_kofamkoala_raw_filterby_thresholds_evalues.py KOFAM_all.out.txt /mnt/DATA1/priscila/kofamKOALA/db/ko_list hmmsearch_KOFAM_multi_best.txt
+
+########
+## 16 ## 
+########
+
+#########################
+## KEGG AND dbCAN tree ##
+#########################
+
+# In this step, the KEGG ontology tree is generated and filtered for unique KOs (KEGG Orthologies) based on the functional annotations from the previous step. 
+# First, a script is used to extract unique KOs from the KEGG annotations (KO_UNIQUE_from_KO_simple.py). 
+# Then, the KEGG ontology table (kegg_tab.txt) is processed to retain only the KOs present in the data, creating a subtable with relevant KOs (KOFAM_KOs_tree.tab).
+
+# Similarly, a tree for CAZy (Carbohydrate-Active Enzymes) is generated. 
+# Unique CAZy identifiers are extracted from the annotations and a script (get_CAZy_tree.py) is used to create a CAZy-specific ontology tree (CAZy_tree.tab),
+# which provides a structured representation of the identified carbohydrate-active enzymes in the data.
+
+# Download kegg_tab.txt
+gdrive_download 11CVgwqy6O2mJ5rc4vxevYQVp04oJrQsl kegg_tab.txt
+
+# Download GET_KEGG_ontology_subtable.py script
+gdrive_download 1AmOiMqLHE8nberbvYEDPT12JShAfSW_w GET_KEGG_ontology_subtable.py
+
+# Download KO_UNIQUE_from_KO_simple.py
+gdrive_download 1aqENUDPh3dCoxnO8YfBZaUjwwxkmlMM1 KO_UNIQUE_from_KO_simple.py
+
+python2.7 KO_UNIQUE_from_KO_simple.py hmmsearch_KOFAM_multi_best.txt
+
+python2.7 GET_KEGG_ontology_subtable.py kegg_tab.txt hmmsearch_KOFAM_multi_best.txt.unique.txt KOFAM_KOs_tree.tab
+
+awk -F'\t' '{print $3}' ~/metagenomic_analysis/8_SPLIT/CAZy_BEST_SIMPLE.txt | sort | uniq > CAZy_BEST_unique.txt
+
+# Download get_CAZy_tree.py script
+gdrive_download 1SGVK2cqWCLozEPGNLvPRs0YG-ckrF_CZ get_CAZy_tree.py
+
+python2.7 get_CAZy_tree.py CAZy_BEST_unique.txt CAZy_tree.tab
+
+########
+## 17 ##
+########
+
+##############################
+## LINK ANNOTATION TO TABLE ##
+##############################
+
+# In this step, the annotation results are linked to the sample table, integrating multiple sources of functional and taxonomic data. 
+# We obtain the final tables of the metagenomic analysis, where we can appreciate the abundance of each sample, the taxonomy and associated functionality. 
+
+# Download link_simple_table_to_mapping_table.py script
+gdrive_download 198TDGsV1cBfLEZorb5znFHysG47XEj5t link_simple_table_to_mapping_table.py
+
+cd ../7_ANNOTATION/
+mv TABLE_NORM_SAMPLES_GENECALL.txt ~/metagenomic_analysis/8_SPLIT/
+cp TAXONOMY_BEST_OF_SIMPLE.txt ~/metagenomic_analysis/belen/8_SPLIT/
+cd ../8_SPLIT
+
+TABLE="~/metagenomic_analysis/9_SPLIT/TABLE_NORM_SAMPLES_GENECALL.txt"
+
+echo "${TABLE}"
+
+TABLE_BASE=${TABLE%%.${TABLE##*.}}
+
+echo "${TABLE_BASE}"
+
+python2.7 link_simple_table_to_mapping_table.py ${TABLE} TAXONOMY_BEST_OF_SIMPLE.txt TAX_BEST bitscore ${TABLE_BASE}_TAX.txt
+
+python2.7 link_simple_table_to_mapping_table.py ${TABLE_BASE}_TAX.txt CAZy_BEST_SIMPLE.txt CAZy e-val ${TABLE_BASE}_TAX_CAZy.txt
+
+python2.7 link_simple_table_to_mapping_table.py ${TABLE_BASE}_TAX_CAZy.txt ../7_ANNOTATION/FUNCTION_JGI_KOG_SIMPLE.txt KOG e-val ${TABLE_BASE}_TAX_CAZy_KOG.tab
+
+python2.7 link_simple_table_to_mapping_table.py ${TABLE_BASE}_TAX_CAZy_KOG.tab hmmsearch_KOFAM_multi_best.txt KEGG e-val ${TABLE_BASE}_TAX_CAZy_KOG_KEGG.tab
+
+cd ../7_ANNOTATION/
+cp TAX_TAB_FINAL.tab ../8_SPLIT/
+cd ../8_SPLIT
+
+# Download add_higher_taxonomy.py script
+gdrive_download 1AWuqqPaP2rUMpF_uMHOGEs8aE3Iy7JS2 add_higher_taxonomy.py
+
+python2.7 add_higher_taxonomy.py ${TABLE_BASE}_TAX_CAZy_KOG_KEGG.tab TAX_TAB_FINAL.tab TAX_BEST ${TABLE_BASE}_TAX2_CAZy_KOG_KEGG.tab TAX_tree_genus.tab
+
+cd ..
+mkdir 9_FINAL_TABLES
+cp ./8_SPLIT/CAZy_tree.tab ./9_FINAL_TABLES
+cp ./8_SPLIT/TABLE_NORM_SAMPLES_GENECALL_TAX_CAZy_KOG_KEGG.tab ./9_FINAL_TABLES
+cp ./8_SPLIT/TAX_TAB_FINAL.tab ./9_FINAL_TABLES
+cp ./8_SPLIT/TABLE_NORM_SAMPLES_GENECALL_TAX2_CAZy_KOG_KEGG.tab ./9_FINAL_TABLES
+
+########################
+## ANALYSIS COMPLETED ##
+########################
