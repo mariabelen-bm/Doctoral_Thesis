@@ -243,20 +243,20 @@ metaquast /mnt/DATA/belen/4_For_Assembly/all.Megahit.assembly/final.contigs.fa -
 # contigs (>= 10000 bp)	10406
 # contigs (>= 25000 bp)	1303
 # contigs (>= 50000 bp)	229
-Largest contig	213010
-Total length	5241019665
-Total length (>= 0 bp)	7719201062
-Total length (>= 1000 bp)	2613105109
-Total length (>= 5000 bp)	417454729
-Total length (>= 10000 bp)	180508676
-Total length (>= 25000 bp)	52451342
-Total length (>= 50000 bp)	16828383
-N50	997
-N90	566
-auN	2360.7
-L50	1384946
-L90	4272456
-GC (%)	...
+# Largest contig	213010
+# Total length	5241019665
+# Total length (>= 0 bp)	7719201062
+# Total length (>= 1000 bp)	2613105109
+# Total length (>= 5000 bp)	417454729
+# Total length (>= 10000 bp)	180508676
+# Total length (>= 25000 bp)	52451342
+# Total length (>= 50000 bp)	16828383
+# N50	997
+# N90	566
+# auN	2360.7
+# L50	1384946
+# L90	4272456
+# GC (%)	...
 
 #######
 ## 9 ##
@@ -610,7 +610,6 @@ cd ../8_SPLIT/
 # containing the best annotations and identifying carbohydrate-active enzymes present in the samples.
 
 # dbCAN local database
-
 conda activate run_dbcan
 
 for file in *.fas
@@ -636,7 +635,6 @@ do
 done
 
 # dbCAN annotation
-
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
