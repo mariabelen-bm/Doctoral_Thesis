@@ -232,7 +232,7 @@ megahit -m 0.75 -t 120 -1 all.pe.qc.fq.1 -2 all.pe.qc.fq.2 -r all.se.qc.fq
 conda activate quast
 
 # Assembly quality check
-metaquast /mnt/DATA/belen/4_For_Assembly/all.Megahit.assembly/final.contigs.fa -t 120 --rna-finding --conserved-genes-finding --max-ref-number 20
+metaquast /mnt/DATA/belen/3_FOR_ASSEMBLY/all.Megahit.assembly/final.contigs.fa -t 120 --rna-finding --conserved-genes-finding --max-ref-number 20
 
 # This is the quality report of the samples:
 
@@ -350,7 +350,7 @@ python2.7 count-up-mapped-from-results-txt-with-ctg-length.py *.reads.by.contigs
 wc -l summary-count-mapped.tsv
 12175286 summary-count-mapped.tsv
 
-grep '>' /mnt/DATA/belen/4_For_Assembly/all.Megahit.assembly/final.contigs.fa | wc -l
+grep '>' /mnt/DATA/belen/4_FOR_ASSEMBLY/all.Megahit.assembly/final.contigs.fa | wc -l
 12175284
 
 # Coverage is a key metric in genomics, as it indicates how many times a genomic region has been sequenced, 
@@ -462,7 +462,7 @@ export LC_ALL=en_US.UTF-8
 sort -t$'\t' -k1,1 -k12,12gr -k11,11g -k3,3gr genecalling_JGI_FUN_20210312.txt | sort -u -k1,1 --merge > genecalling_JGI_FUN_20210312_best.txt
 
 # GENERA DEFINED
-diamond blastp -d /mnt/DATA/DATABASES/NCBI_nr_DIAMOND/NCBI_nr_20210225_diamond_GENERA -q /mnt/DATA/belen/5_FGS/belen_MG_Megahit_genecalling_fgs.faa -e 1E-5 -o belen_MG_genecalling_NCBI_nr_PROTEINS_GENERA.txt -f 6 -p 120 -b12 -c1
+diamond blastp -d /mnt/DATA/DATABASES/NCBI_nr_DIAMOND/NCBI_nr_20210225_diamond_GENERA -q /mnt/DATA/belen/metagenomic_analysis/4_FGS/belen_MG_Megahit_genecalling_fgs.faa -e 1E-5 -o belen_MG_genecalling_NCBI_nr_PROTEINS_GENERA.txt -f 6 -p 120 -b12 -c1
 
 #############################################################
 ## Total time = 57412.9s                                   ##
@@ -586,11 +586,11 @@ awk -F'[|\t]' '{print $1"\t"$15"\t["$5"]"}' genecalling_JGI_FUN_20210312_best.tx
 # Download split_fasta_by_group_size.py script 
 gdrive_download 1mGbdx3OBumymosW24WaYfZT9nq_a1z1z split_fasta_by_group_size.py
 
-python2.7 split_fasta_by_group_size.py /mnt/DATA/belen/5_FGS/belen_MG_Megahit_genecalling_fgs.faa 83000
+python2.7 split_fasta_by_group_size.py /mnt/DATA/belen/metagenomic_analysis_chapter_4/4_FGS/belen_MG_Megahit_genecalling_fgs.faa 83000
 
 cd ..
 mkdir 8_SPLIT 
-cd ./8_ANNOTATION
+cd ./7_ANNOTATION
 mv *.fas ../8_SPLIT
 cd ../8_SPLIT/
 
@@ -734,7 +734,7 @@ mv TABLE_NORM_SAMPLES_GENECALL.txt ~/metagenomic_analysis/8_SPLIT/
 cp TAXONOMY_BEST_OF_SIMPLE.txt ~/metagenomic_analysis/belen/8_SPLIT/
 cd ../8_SPLIT
 
-TABLE="~/metagenomic_analysis/9_SPLIT/TABLE_NORM_SAMPLES_GENECALL.txt"
+TABLE="~/metagenomic_analysis/8_SPLIT/TABLE_NORM_SAMPLES_GENECALL.txt"
 
 echo "${TABLE}"
 
