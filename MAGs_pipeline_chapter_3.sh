@@ -20,7 +20,7 @@
 
 conda activate metawrap
 
-metawrap binning -a /mnt/DATA/belen/MAGS_assembly_chapter4/final.contigs.fa -o binning_metawrap -t 120 -m 1000 --metabat2 --maxbin2 --concoct --universal --run-checkm --interleaved /mnt/DATA/belen/MAGS_assembly/*.pe.qc.fq.gz
+metawrap binning -a /mnt/DATA/belen/MAGS_assembly_chapter3/final.contigs.fa -o binning_metawrap -t 120 -m 1000 --metabat2 --maxbin2 --concoct --universal --run-checkm --interleaved /mnt/DATA/belen/MAGS_assembly/*.pe.qc.fq.gz
 
 #######
 ## 2 ##
@@ -32,7 +32,7 @@ metawrap binning -a /mnt/DATA/belen/MAGS_assembly_chapter4/final.contigs.fa -o b
 
 # In this step you pick the best version of each bin. You can be more or less stringent in this step by lowering the completeness a bit.
 
-metawrap bin_refinement -o /mnt/DATA/belen/MAGS_assembly_chapter4/metawrap_refined_bins/ -A /mnt/DATA/belen/MAGS_assembly_chapter4/binning_metawrap/metabat2_bins/ -B /mnt/DATA/belen/MAGS_assembly_chapter4/binning_metawrap_concot/concoct_bins/ -C /mnt/DATA/belen/MAGS_assembly_chapter4/binning_metawrap/maxbin2_bins/ -m 1000 -t 120 -c 50 -x 10
+metawrap bin_refinement -o /mnt/DATA/belen/MAGS_assembly_chapter3/metawrap_refined_bins/ -A /mnt/DATA/belen/MAGS_assembly_chapter3/binning_metawrap/metabat2_bins/ -B /mnt/DATA/belen/MAGS_assembly_chapter3/binning_metawrap_concot/concoct_bins/ -C /mnt/DATA/belen/MAGS_assembly_chapter3/binning_metawrap/maxbin2_bins/ -m 1000 -t 120 -c 50 -x 10
 
 #######
 ## 3 ##
@@ -46,7 +46,7 @@ metawrap bin_refinement -o /mnt/DATA/belen/MAGS_assembly_chapter4/metawrap_refin
 
 conda activate checkm2
 
-checkm2 predict -i /mnt/DATA/belen/MAGS_assembly_chapter4/metawrap_refined_bins/metawrap_50_10_bins/ -x fa --output-directory refinded_checkm2 --database_path /mnt/DATA1/priscila/checkm2/database/CheckM2_database/uniref100.KO.1.dmnd --tmpdir ./ --threads 240
+checkm2 predict -i /mnt/DATA/belen/MAGS_assembly_chapter3/metawrap_refined_bins/metawrap_50_10_bins/ -x fa --output-directory refinded_checkm2 --database_path /mnt/DATA1/priscila/checkm2/database/CheckM2_database/uniref100.KO.1.dmnd --tmpdir ./ --threads 240
 
 awk '$2 >= 50 && $3 <=10' refinded_checkm2/quality_report.tsv > good_bins_checkm2.tsv
 
@@ -67,7 +67,7 @@ for i in $(cat bins_list); do cp metawrap_50_10_bins/$i.fa selected_bins/ ;done
 
 conda activate /mnt/DATA1/priscila/condaenvs/gtdbtk220
 
-gtdbtk classify_wf --genome_dir  /mnt/DATA/belen/MAGS_assembly_chapter4/metawrap_refined_bins/metawrap_50_10_bins/ --out_dir refined_checkm2_gtdb220 --cpus 240 --pplacer_cpus 60 -x .fa --tmpdir ./ --skip_ani_screen
+gtdbtk classify_wf --genome_dir  /mnt/DATA/belen/MAGS_assembly_chapter3/metawrap_refined_bins/metawrap_50_10_bins/ --out_dir refined_checkm2_gtdb220 --cpus 240 --pplacer_cpus 60 -x .fa --tmpdir ./ --skip_ani_screen
 
 #######
 ## 5 ##
@@ -88,7 +88,7 @@ echo $TMPDIR
 
 mkdir selected_bins_gunc
 
-gunc run --input_dir /mnt/DATA/belen/MAGS_assembly_chapter4/metawrap_refined_bins/metawrap_50_10_bins/ --detailed_output --contig_taxonomy_output --use_species_level --out_dir selected_bins_gunc --threads 120 --db_file /mnt/DATA1/priscila/database/gunc_db_progenomes2.1.dmnd --file_suffix .fa
+gunc run --input_dir /mnt/DATA/belen/MAGS_assembly_chapter3/metawrap_refined_bins/metawrap_50_10_bins/ --detailed_output --contig_taxonomy_output --use_species_level --out_dir selected_bins_gunc --threads 120 --db_file /mnt/DATA1/priscila/database/gunc_db_progenomes2.1.dmnd --file_suffix .fa
 
 #######
 ## 6 ##
